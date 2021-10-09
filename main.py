@@ -12,6 +12,7 @@ global photo_gray
 global photo_filtered
 global photo_contour
 global photo_cropped
+global photo_result
 
 root = Tk()
 root.title('License Plate Detector (PMSCS-600), submitted by Wahid')
@@ -45,6 +46,7 @@ def detectlicense(image):
     global photo_filtered
     global photo_contour
     global photo_cropped
+    global photo_result
 
     img = cv2.imread(image)
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -106,7 +108,28 @@ def detectlicense(image):
     # Apply OCR
     reader = easyocr.Reader(['en'])
     result = reader.readtext(img_cropped)
+
     print(result)
+
+    text = result[0][-2]
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    output = cv2.putText(
+        img,
+        text=text,
+        org=(approx[0][0][0]+60, approx[1][0][1]+60),
+        fontFace=font,
+        fontScale=5,
+        color=(0, 255, 0),
+        thickness=15,
+        lineType=cv2.LINE_AA)
+    output = cv2.rectangle(img, tuple(approx[0][0]), tuple(approx[2][0]), (0, 255, 0), 3)
+
+    img_result = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
+    pil_img_result = Image.fromarray(img_result)
+    pil_img_result = pil_img_result.resize((400, 400))
+    photo_result = ImageTk.PhotoImage(pil_img_result)
+    label_result = tk.Label(frame2, image=photo_result)
+    label_result.pack(pady=10)
 
 def btnclick():
     global photo_original
