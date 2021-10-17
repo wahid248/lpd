@@ -60,7 +60,7 @@ frame2 = Frame(canvas)
 canvas.create_window((0, 0), window=frame2, anchor='nw')
 
 
-def detectlicense(image):
+def detect_license(image):
     global photo_gray
     global photo_filtered
     global photo_contour
@@ -174,8 +174,7 @@ def detectlicense(image):
             registration_message['fg'] = 'red'
 
 
-
-def btnclick():
+def btn_click():
     global photo_original
 
     registration_message['text'] = message_working
@@ -187,10 +186,10 @@ def btnclick():
     photo_original = ImageTk.PhotoImage(image)
     label = tk.Label(frame2, image=photo_original)
     label.pack(side='top', anchor='nw', pady=10)
-    detectlicense(filename)
+    detect_license(filename)
 
 
-openFile = tk.Button(frame2, text="Open File", padx=10, pady=5, fg='white', bg='black', command=btnclick)
+openFile = tk.Button(frame2, text="Open File", padx=10, pady=5, fg='white', bg='black', command=btn_click)
 openFile.pack(side='top', anchor='nw')
 
 root.mainloop()
