@@ -6,6 +6,9 @@ import tkinter as tk
 from tkinter import *
 from tkinter import filedialog, ttk
 from PIL import ImageTk, Image
+import pyodbc
+import re
+from pathlib import Path
 
 global photo_original
 global photo_gray
@@ -13,10 +16,26 @@ global photo_filtered
 global photo_contour
 global photo_cropped
 global photo_result
+global registration_message
+global message_select_image
+global message_working
+global message_registered
+global message_not_registered
+
+current_path = Path.cwd()
+image_select_image = str(current_path) + '\\asset\\select_image.png'
 
 root = Tk()
 root.title('License Plate Detector (PMSCS-600), submitted by Wahid')
 root.resizable(width=True, height=True)
+
+message_select_image = 'Select an image'
+message_working = 'Working...'
+message_registered = 'The vehicle is registered'
+message_not_registered = 'The vehicle is NOT registered'
+
+registration_message = tk.Label(root, text=message_select_image, fg='black', font=("Courier", 20))
+registration_message.pack()
 
 # Main frame
 main_frame = Frame(root, bg='#e6e6ff', padx=20, pady=20)
@@ -47,6 +66,7 @@ def detectlicense(image):
     global photo_contour
     global photo_cropped
     global photo_result
+    global registration_message
 
     img = cv2.imread(image)
     img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -127,9 +147,38 @@ def detectlicense(image):
     label_result = tk.Label(frame2, image=photo_result)
     label_result.pack(pady=10)
 
+    # Connect to DB
+    if text != '':
+        conn = pyodbc.connect('''Driver={ODBC Driver 17 for SQL Server};
+                              Server=localhost;
+                              Database=LPD;
+                              Trusted_Connection=yes;''')
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM Vehicles')
+        rows = cursor.fetchall()
+        registration_ocr = stripped_string = re.sub(r'\W+', '', text)
+
+        is_registered = False
+
+        for row in rows:
+            registration_db = stripped_string = re.sub(r'\W+', '', row.Registration)
+            if registration_db == registration_ocr:
+                is_registered = True
+                break
+
+        if is_registered:
+            registration_message['text'] = message_registered
+            registration_message['fg'] = 'blue'
+        else:
+            registration_message['text'] = message_not_registered
+            registration_message['fg'] = 'red'
+
+
+
 def btnclick():
     global photo_original
 
+    registration_message['text'] = message_working
     filename = filedialog.askopenfilename(
         initialdir="/Projects/JU/train data 2",
         title='Select Image',
