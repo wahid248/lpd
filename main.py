@@ -23,7 +23,7 @@ main_frame = Frame(root, bg='#e6e6ff', padx=20, pady=20)
 main_frame.pack(fill=BOTH, expand=1)
 
 # Canvas
-canvas = Canvas(main_frame, height=700, width=1000)
+canvas = Canvas(main_frame, height=768, width=1366)
 canvas.pack(side=LEFT, fill=BOTH, expand=1)
 
 # Scrollbar
@@ -54,7 +54,6 @@ def detectlicense(image):
     # convert image to gray
     img_gray_converted = cv2.cvtColor(img_gray, cv2.COLOR_BGR2RGB)
     pil_img_gray = Image.fromarray(img_gray_converted)
-    pil_img_gray = pil_img_gray.resize((400, 400))
     photo_gray = ImageTk.PhotoImage(pil_img_gray)
     label_gray = tk.Label(frame2, image=photo_gray)
     label_gray.pack(pady=10)
@@ -64,7 +63,6 @@ def detectlicense(image):
     edged = cv2.Canny(bfilter, 30, 200)  # Edge detection
     img_filtered_converted = cv2.cvtColor(edged, cv2.COLOR_BGR2RGB)
     pil_img_filtered = Image.fromarray(img_filtered_converted)
-    pil_img_filtered = pil_img_filtered.resize((400, 400))
     photo_filtered = ImageTk.PhotoImage(pil_img_filtered)
     label_filtered = tk.Label(frame2, image=photo_filtered)
     label_filtered.pack(pady=10)
@@ -87,7 +85,6 @@ def detectlicense(image):
 
     img_contour_converted = cv2.cvtColor(img_contour, cv2.COLOR_BGR2RGB)
     pil_img_contour = Image.fromarray(img_contour_converted)
-    pil_img_contour = pil_img_contour.resize((400, 400))
     photo_contour = ImageTk.PhotoImage(pil_img_contour)
     label_contour = tk.Label(frame2, image=photo_contour)
     label_contour.pack(pady=10)
@@ -116,17 +113,16 @@ def detectlicense(image):
     output = cv2.putText(
         img,
         text=text,
-        org=(approx[0][0][0]+60, approx[1][0][1]+60),
+        org=(approx[1][0][0], approx[0][0][1]-10),
         fontFace=font,
-        fontScale=5,
+        fontScale=1,
         color=(0, 255, 0),
-        thickness=15,
+        thickness=2,
         lineType=cv2.LINE_AA)
     output = cv2.rectangle(img, tuple(approx[0][0]), tuple(approx[2][0]), (0, 255, 0), 3)
 
     img_result = cv2.cvtColor(output, cv2.COLOR_BGR2RGB)
     pil_img_result = Image.fromarray(img_result)
-    pil_img_result = pil_img_result.resize((400, 400))
     photo_result = ImageTk.PhotoImage(pil_img_result)
     label_result = tk.Label(frame2, image=photo_result)
     label_result.pack(pady=10)
@@ -135,11 +131,10 @@ def btnclick():
     global photo_original
 
     filename = filedialog.askopenfilename(
-        initialdir="/Projects/JU/train data",
+        initialdir="/Projects/JU/train data 2",
         title='Select Image',
         filetypes=([('image', '*.jpg'), ('image', '*.jpeg'), ('image', '*.png'), ('all files', '*.*')]))
     image = Image.open(filename)
-    image = image.resize((400, 400))
     photo_original = ImageTk.PhotoImage(image)
     label = tk.Label(frame2, image=photo_original)
     label.pack(side='top', anchor='nw', pady=10)
