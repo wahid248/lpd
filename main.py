@@ -23,7 +23,6 @@ global message_registered
 global message_not_registered
 
 current_path = Path.cwd()
-image_select_image = str(current_path) + '\\asset\\select_image.png'
 
 root = Tk()
 root.title('License Plate Detector (PMSCS-600), submitted by Wahid')
@@ -113,7 +112,7 @@ def detect_license(image):
     (x, y) = np.where(mask == 255)
     (x1, y1) = (np.min(x), np.min(y))
     (x2, y2) = (np.max(x), np.max(y))
-    img_cropped = img_gray[x1:x2+1, y1:y2+1]
+    img_cropped = img_gray[x1:x2 + 1, y1:y2 + 1]
 
     img_cropped_converted = cv2.cvtColor(img_cropped, cv2.COLOR_BGR2RGB)
     pil_img_cropped = Image.fromarray(img_cropped_converted)
@@ -133,7 +132,7 @@ def detect_license(image):
     output = cv2.putText(
         img,
         text=text,
-        org=(approx[1][0][0], approx[0][0][1]-10),
+        org=(approx[1][0][0], approx[0][0][1] - 10),
         fontFace=font,
         fontScale=1,
         color=(0, 255, 0),
@@ -179,9 +178,11 @@ def btn_click():
 
     registration_message['text'] = message_working
     filename = filedialog.askopenfilename(
-        initialdir="/Projects/JU/train data 2",
+        initialdir="asset",
         title='Select Image',
         filetypes=([('image', '*.jpg'), ('image', '*.jpeg'), ('image', '*.png'), ('all files', '*.*')]))
+    if not filename:
+        return
     image = Image.open(filename)
     photo_original = ImageTk.PhotoImage(image)
     label = tk.Label(frame2, image=photo_original)
